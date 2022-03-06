@@ -20,9 +20,9 @@ type Project struct {
 	CategoryUUID string `json:"category_uuid"`
 	Name         string `json:"name"`
 	Prewiew      string `json:"prewiew"`
-	State        string `jsin:"state"`
+	State        int    `jsin:"state"`
 	// * Если state = 0 - публичный (Default)
-	// * Если state = 1 - приватный
+	// * Если state = 1 - приватный для всех
 	// * Если state = 2 - доступный только по api
 	// * Если state = 3 - доступный по api и публично
 }
@@ -32,8 +32,8 @@ type Photo struct {
 	ProjectUUID string `json:"project_uuid"`
 	Src         string `json:"src"`
 	Type        int    `json:"type"`
-	// * Если type = 1: Десктопное фото
-	// * Если type = 2: Мобильное фото ( делать в три колонки )
+	// * Если type = 0: Десктопное фото
+	// * Если type = 1: Мобильное фото ( делать в три колонки )
 }
 
 type Tags struct {
@@ -51,7 +51,7 @@ type Description struct {
 }
 
 type Category struct {
-	UUID     int    `json:"uuid"`
-	UserUUID int    `json:"user_id"`
+	UUID     string `json:"uuid"`
+	UserUUID string `json:"user_uuid"`
 	Name     string `json:"name"`
 }
