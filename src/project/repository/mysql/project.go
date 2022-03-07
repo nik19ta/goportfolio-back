@@ -3,7 +3,6 @@ package mysql
 import (
 	"go-just-portfolio/models"
 	"go-just-portfolio/src/project"
-	"mime/multipart"
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -63,7 +62,23 @@ func (p ProjectRepository) SetStateproject(state int, uuid, user_id string) erro
 }
 
 func (p ProjectRepository) CreateDescription(project_uuid, key, value, lang string) (*string, error) {
-	return nil, nil
+	uuid := uuid.New().String()
+
+	description := models.Description{
+		UUID:        uuid,
+		ProjectUUID: project_uuid,
+		Key:         key,
+		Value:       value,
+		Language:    lang,
+	}
+
+	res := p.db.Create(&description)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &uuid, nil
 }
 
 func (p ProjectRepository) DeleteprojectById(project_uuid, user_uuid string) error {
@@ -79,14 +94,56 @@ func (p ProjectRepository) DeleteprojectById(project_uuid, user_uuid string) err
 	return nil
 }
 
-func (p ProjectRepository) LoadPhoto(file *multipart.FileHeader) error {
-	return nil
-}
-
 func (p ProjectRepository) CreateTag(project_uuid string, tag string) (*string, error) {
-	return nil, nil
+	uuid := uuid.New().String()
+
+	newTag := models.Tags{
+		UUID:        uuid,
+		ProjectUUID: project_uuid,
+		Name:        tag,
+	}
+
+	res := p.db.Create(&newTag)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &uuid, nil
 }
 
-func (p ProjectRepository) SavePhoto(project_uuid, photo_name, photo_type string) error {
+func (p ProjectRepository) UpdatePrewiew(project_uuid, prewiew_name string) error {
+	query := "UPDATE projects SET prewiew = '" + prewiew_name + "' WHERE (uuid = '" + project_uuid + "');"
+
+	var ss models.Project
+
+	p.db.Raw(query).Scan(&ss)
+
 	return nil
+}
+
+func (p ProjectRepository) SavePhoto(project_uuid, photo_name, photo_type string) (*string, error) {
+	uuid := uuid.New().String()
+
+	var image_type int
+
+	if photo_type == "mobile" {
+		image_type = 1
+	} else {
+		image_type = 0
+	}
+
+	photo := models.Photo{
+		UUID:        uuid,
+		ProjectUUID: project_uuid,
+		Src:         photo_name,
+		Type:        image_type,
+	}
+
+	res := p.db.Create(&photo)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return &uuid, nil
 }

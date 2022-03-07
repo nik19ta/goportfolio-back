@@ -159,11 +159,6 @@ func (h *Handler) LoadPhoto(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"project": "n n n"})
 }
 
-type LoadPhotoPrewiew struct {
-	PhotoType   string `json:"photo_type"`
-	ProjectUUID string `json:"project_uui"`
-}
-
 func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	file, err := c.FormFile("file")
 
@@ -174,12 +169,8 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 		return
 	}
 
-	inp := new(LoadPhotoPrewiew)
-
-	if err := c.BindJSON(inp); err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
+	photo_type := c.PostForm("photo_type")
+	project_uuid := c.PostForm("project_uuid")
 
 	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
 
@@ -188,5 +179,13 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 		return
 	}
 
-	h.useCase.LoadPhoto(file, userid, inp.ProjectUUID, inp.PhotoType)
+	uuid, err := h.useCase.LoadPhoto(file, userid, project_uuid, photo_type)
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "error upload file"})
+		return
+	}
+
+	c.JSON(201, gin.H{"upload": uuid})
 }

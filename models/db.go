@@ -48,14 +48,14 @@ type Photo struct {
 }
 
 type Tags struct {
-	UUID        int    `json:"uuid"`
-	ProjectUUID int    `json:"project_uuid"`
+	UUID        string `json:"uuid"`
+	ProjectUUID string `json:"project_uuid"`
 	Name        string `json:"name"`
 }
 
 type Description struct {
-	UUID        int    `json:"uuid"`
-	ProjectUUID int    `json:"project_uuid"`
+	UUID        string `json:"uuid"`
+	ProjectUUID string `json:"project_uuid"`
 	Key         string `json:"key"`
 	Value       string `json:"value"`
 	Language    string `json:"language"`

@@ -19,11 +19,29 @@ func NewprojectUseCase(userRepo project.ProjectRepository) *projectUseCase {
 	return &projectUseCase{userRepo: userRepo}
 }
 
-//* No Auth
+/*
+	Метод позволяет получить проект по его uuid
+
+	! Метод требует авторизации через bearer token если этот проект приватный (state == 1)
+*/
+
 func (p *projectUseCase) GetProjectById(uuid string) (*models.Project, error) {
 	var project models.Project
 	return &project, nil
 }
+
+/*
+		Получить проекты пользователя по имени
+		Есть три вида проектов state: 0, 1, 2
+		* Если state = 0 - публичный для всех (Default)
+	  * Если state = 1 - приватный для всех
+	 	* Если state = 2 - доступный только по api
+
+		Если авторизованный пользователь посылает запрос и его uuid
+		совпадает с user_uuid проекта, значит он может получить приватный проект
+
+		! Метод требует авторизации через bearer token если нужно получить приватные проекты
+*/
 
 func (p *projectUseCase) GetProjectsByShortname(shortname string, auth bool, user_id string) ([]models.ApiProject, error) {
 	data, err := p.userRepo.GetProjectsByShortname(shortname)
@@ -67,7 +85,15 @@ func (p *projectUseCase) GetProjectsByShortname(shortname string, auth bool, use
 	return sort_projects, nil
 }
 
-//* Auth
+/*
+	Создаёт новый проект с именем untitled, возвращает uuid по
+	которому можно добовлять материал в проект:
+	* Фото, тектс, теги
+	А также изменять:
+	* Превью, название
+
+	! Метод требует авторизации через bearer token
+*/
 func (p *projectUseCase) Newproject(user_uuid, category_uuid string) (*string, error) {
 	uuid, err := p.userRepo.Newproject(user_uuid, category_uuid, "untitled")
 
@@ -77,6 +103,22 @@ func (p *projectUseCase) Newproject(user_uuid, category_uuid string) (*string, e
 
 	return uuid, nil
 }
+
+/*
+	Удаляет проект по его uuid
+
+	* Удалить проект может только его создать
+
+	! При удаление проекта также удаляёться связанные с ним записи в таблицах
+	! tags
+	! descriptions
+	! photo
+
+	Все записи удаляёться по uuid проекта, для того что бы база данных не засорялась
+
+	! Метод требует авторизации через bearer token
+*/
+
 func (p *projectUseCase) DeleteprojectById(uuid, user_id string) error {
 	err := p.userRepo.DeleteprojectById(uuid, user_id)
 
@@ -86,6 +128,12 @@ func (p *projectUseCase) DeleteprojectById(uuid, user_id string) error {
 
 	return nil
 }
+
+/*
+	Можно изменить видимоть проекта, от 0 до 2
+
+	! Метод требует авторизации через bearer token
+*/
 func (p *projectUseCase) SetStateproject(state int, uuid, user_id string) error {
 	err := p.userRepo.SetStateproject(state, uuid, user_id)
 
@@ -95,59 +143,56 @@ func (p *projectUseCase) SetStateproject(state int, uuid, user_id string) error 
 
 	return nil
 }
-func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, project_uuid string, photo_type string) error {
+
+/*
+	Метод подгрузки фото
+
+	Фото емеет три типа
+	Превью самого проекта, записываеться в поле prewie проекта
+	* 1. prewiew
+	Фото записываеться в таблицу photos, имеют uuid на проект к которому они принаджлежать:
+	* 2. mobile - это скриншот мобильного телефона или фото которые нужно просто поместить в ряд
+	* 3. desktop - это большое фото на весь экран, его нельяза поместить в одну линию с другими
+
+	В таблици тип фото представлен в int
+	* 0: desktop
+	* 1: mobile
+
+	Фото сохроняеться в директорию ./images/ а в базу данных записываеться имя фото и расширение
+	! Достпуные расширения фото (.png, .jpg, .jpeg)
+
+	Для того что бы получить фото нужно послать запрос на:
+	https://host/images/image_name.extention
+
+	* функция: filesystem.SaveUploadedFile() сохроняет картинку
+	* а функция p.userRepo.SavePhoto() сохроняет запись о картинки в бд
+
+	! Метод требует авторизации через bearer token
+*/
+
+func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, project_uuid string, photo_type string) (*string, error) {
 
 	extension := filepath.Ext(file.Filename)
 	newFileName := uuid.New().String() + extension
 	path := "./images/" + newFileName
 
+	var uuid *string
+
 	err := filesystem.SaveUploadedFile(file, path)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if photo_type == "prewiew" {
-		p.userRepo.SavePhoto(project_uuid, newFileName, "prewiew")
+		err = p.userRepo.UpdatePrewiew(project_uuid, newFileName)
 	} else {
-		p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
+		uuid, err = p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
 	}
 
-	return nil
+	if err != nil {
+		return nil, err
+	}
+
+	return uuid, nil
 }
-
-// func (a *projectUseCase) SignUp(username, mail, password, fullname string) (*string, error) {
-// 	user := &models.User{
-// 		Shortname: username,
-// 		Mail:      mail,
-// 		Password:  password,
-// 		Fullname:  fullname,
-// 		Type:      "user",
-// 	}
-
-// 	token, err := a.userRepo.CreateUser(user)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return token, nil
-// }
-
-// func (a *projectUseCase) SignIn(username, password string) (*string, error) {
-// 	token, err := a.userRepo.GetUserToken(username, password)
-// 	if err != nil {
-// 		return nil, auth.ErrUserNotFound
-// 	}
-
-// 	return token, nil
-// }
-
-// func (a *projectUseCase) Profile(shortname string) (*models.User, error) {
-// 	user, err := a.userRepo.GetUserInfo(shortname)
-// 	if err != nil {
-// 		return nil, auth.ErrUserNotFound
-// 	}
-
-// 	return user, nil
-// }

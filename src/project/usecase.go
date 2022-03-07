@@ -13,5 +13,5 @@ type UseCase interface {
 	Newproject(user_uuid, category_uuid string) (*string, error)
 	DeleteprojectById(uuid, user_id string) error
 	SetStateproject(state int, uuid, user_id string) error
-	LoadPhoto(file *multipart.FileHeader, user_uuid, project_uuid string, photo_type string) error
+	LoadPhoto(file *multipart.FileHeader, user_uuid, project_uuid string, photo_type string) (*string, error)
 }
