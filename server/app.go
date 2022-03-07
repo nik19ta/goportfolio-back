@@ -17,40 +17,44 @@ import (
 	authhttp "go-just-portfolio/src/auth/delivery/http"
 	authmysql "go-just-portfolio/src/auth/repository/mysql"
 	authusecase "go-just-portfolio/src/auth/usecase"
-	// service "go-just-portfolio/service"
-	// servicehttp "go-just-portfolio/service/delivery/http"
-	// servicemysql "go-just-portfolio/service/repository/mysql"
-	// serviceusecase "go-just-portfolio/service/usecase"
-	// market "go-just-portfolio/market"
-	// markethttp "go-just-portfolio/market/delivery/http"
-	// marketmysql "go-just-portfolio/market/repository/mysql"
-	// marketusecase "go-just-portfolio/market/usecase"
+
+	project "go-just-portfolio/src/project"
+	projecthttp "go-just-portfolio/src/project/delivery/http"
+	projectmysql "go-just-portfolio/src/project/repository/mysql"
+	projectusecase "go-just-portfolio/src/project/usecase"
+
+	categories "go-just-portfolio/src/categories"
+	categorieshttp "go-just-portfolio/src/categories/delivery/http"
+	categoriesmysql "go-just-portfolio/src/categories/repository/mysql"
+	categoriesusecase "go-just-portfolio/src/categories/usecase"
 )
 
 type App struct {
 	httpServer *http.Server
 
-	authUC auth.UseCase
-	// serviceUC service.UseCase
-	// marketUC  market.UseCase
+	authUC       auth.UseCase
+	projectUC    project.UseCase
+	categoriesUC categories.UseCase
 }
 
 func NewApp() *App {
 	db := database.InitDB()
 
 	userRepo := authmysql.NewUserRepository(db)
-	// serviceRepo := servicemysql.NewUserRepository(db)
-	// marketRepo := marketmysql.NewUserRepository(db)
+	projectRepo := projectmysql.NewProjectRepository(db)
+	categoriesRepo := categoriesmysql.NewСategoriesRepository(db)
 
 	return &App{
-		authUC: authusecase.NewAuthUseCase(userRepo),
-		// marketUC:  marketusecase.NewAuthUseCase(marketRepo),
-		// serviceUC: serviceusecase.NewAuthUseCase(serviceRepo),
+		authUC:       authusecase.NewAuthUseCase(userRepo),
+		projectUC:    projectusecase.NewprojectUseCase(projectRepo),
+		categoriesUC: categoriesusecase.NewСategoriesUseCase(categoriesRepo),
 	}
 }
 
 func (a *App) Run(port string) error {
 	router := gin.Default()
+
+	router.Static("/images", "./images")
 
 	router.Use(
 		gin.Recovery(),
@@ -60,8 +64,8 @@ func (a *App) Run(port string) error {
 	router.Use(middleware.CORSMiddleware())
 
 	authhttp.RegisterHTTPEndpoints(router, a.authUC)
-	// servicehttp.RegisterHTTPEndpoints(router, a.serviceUC)
-	// markethttp.RegisterHTTPEndpoints(router, a.marketUC)
+	projecthttp.RegisterHTTPEndpoints(router, a.projectUC)
+	categorieshttp.RegisterHTTPEndpoints(router, a.categoriesUC)
 
 	a.httpServer = &http.Server{
 		Addr:           ":" + port,
