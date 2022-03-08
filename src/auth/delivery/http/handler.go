@@ -2,8 +2,9 @@ package http
 
 import (
 	auth "go-just-portfolio/src/auth"
-	"log"
 	"net/http"
+
+	"go-just-portfolio/models"
 
 	gin "github.com/gin-gonic/gin"
 )
@@ -18,15 +19,8 @@ func NewHandler(useCase auth.UseCase) *Handler {
 	}
 }
 
-type signInput struct {
-	Shortname string `json:"shortname"`
-	Mail      string `json:"mail"`
-	Password  string `json:"password"`
-	Fullname  string `json:"fullname"`
-}
-
 func (h *Handler) SignUp(c *gin.Context) {
-	inp := new(signInput)
+	inp := new(models.SignInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -47,8 +41,6 @@ func (h *Handler) SignUp(c *gin.Context) {
 }
 
 func (h *Handler) Profile(c *gin.Context) {
-
-	log.Println(len(c.Request.URL.Query()["shortname"]) == 0)
 	if len(c.Request.URL.Query()["shortname"]) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -68,7 +60,7 @@ func (h *Handler) Profile(c *gin.Context) {
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
-	inp := new(signInput)
+	inp := new(models.SignInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)

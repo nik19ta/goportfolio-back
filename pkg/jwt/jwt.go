@@ -3,7 +3,6 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -18,9 +17,6 @@ func GetFieldFromJWT(token string, field string) (*string, error) {
 	}
 
 	words := strings.Fields(token)
-	log.Println("token")
-	log.Println(token)
-	log.Println(words)
 
 	if len(words) == 0 {
 		return nil, errors.New("not token")

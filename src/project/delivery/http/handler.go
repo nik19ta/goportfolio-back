@@ -6,7 +6,6 @@ import (
 	utils "go-just-portfolio/pkg/utils"
 	project "go-just-portfolio/src/project"
 
-	"log"
 	"net/http"
 
 	gin "github.com/gin-gonic/gin"
@@ -22,19 +21,9 @@ func NewHandler(useCase project.UseCase) *Handler {
 	}
 }
 
-type signInput struct {
-	Shortname string `json:"shortname"`
-	Mail      string `json:"mail"`
-	Password  string `json:"password"`
-	Fullname  string `json:"fullname"`
-}
-
-func (h *Handler) GetProjectById(c *gin.Context) {
-
-}
+func (h *Handler) GetProjectById(c *gin.Context) {}
 
 func (h *Handler) GetProjectsByShortname(c *gin.Context) {
-
 	var projects []models.ApiProject
 	var err error
 	if len(c.Request.Header["Authorization"]) != 0 {
@@ -58,16 +47,10 @@ func (h *Handler) GetProjectsByShortname(c *gin.Context) {
 	c.JSON(http.StatusOK, projects)
 }
 
-type SetState struct {
-	ProjectUUID string `json:"project_uuid"`
-	State       int    `json:"state"`
-}
-
 func (h *Handler) ProjectSetState(c *gin.Context) {
-	inp := new(SetState)
+	inp := new(models.SetStateInp)
 
 	if err := c.BindJSON(inp); err != nil {
-		log.Panicln(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
@@ -98,12 +81,8 @@ func (h *Handler) ProjectSetState(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"state": inp.State, "project": inp.ProjectUUID})
 }
 
-type DeleteProject struct {
-	UUID string `json:"uuid"`
-}
-
 func (h *Handler) DeleteprojectById(c *gin.Context) {
-	inp := new(DeleteProject)
+	inp := new(models.DelProjectInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -127,13 +106,9 @@ func (h *Handler) DeleteprojectById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"deleted": inp.UUID})
 }
 
-type Newproject struct {
-	CategoryUUID string `json:"category_uuid"`
-}
-
+//* Создаёт новый untitled проект
 func (h *Handler) NewProject(c *gin.Context) {
-	//* Создаёт новый untitled проект
-	inp := new(Newproject)
+	inp := new(models.NewProjectInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -154,10 +129,6 @@ func (h *Handler) NewProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"project": uuid})
-}
-
-func (h *Handler) LoadPhoto(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"project": "n n n"})
 }
 
 func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
@@ -183,7 +154,6 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	uuid, err := h.useCase.LoadPhoto(file, *userid, project_uuid, photo_type)
 
 	if err != nil {
-		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "error upload file"})
 		return
 	}

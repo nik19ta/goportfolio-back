@@ -1,6 +1,7 @@
 package http
 
 import (
+	"go-just-portfolio/models"
 	"go-just-portfolio/pkg/utils"
 	categories "go-just-portfolio/src/categories"
 
@@ -19,13 +20,6 @@ func NewHandler(useCase categories.UseCase) *Handler {
 	}
 }
 
-type signInput struct {
-	Shortname string `json:"shortname"`
-	Mail      string `json:"mail"`
-	Password  string `json:"password"`
-	Fullname  string `json:"fullname"`
-}
-
 func (h *Handler) GetCategoriesByShortname(c *gin.Context) {
 	data, err := h.useCase.GetCategoriesByUserName(c.Request.URL.Query()["shortname"][0])
 
@@ -37,13 +31,8 @@ func (h *Handler) GetCategoriesByShortname(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-type CategoryUpdate struct {
-	UUID  string `json:"uuid"`
-	Title string `json:"title"`
-}
-
 func (h *Handler) UpdateCategory(c *gin.Context) {
-	inp := new(CategoryUpdate)
+	inp := new(models.CategoryInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -64,15 +53,11 @@ func (h *Handler) UpdateCategory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"statue": true, "title": inp.Title})
-}
-
-type DeleteCategory struct {
-	UUID string `json:"uuid"`
+	c.JSON(http.StatusOK, gin.H{"status": true, "title": inp.Title, "uuid": inp.UUID})
 }
 
 func (h *Handler) DeleteCategoryById(c *gin.Context) {
-	inp := new(DeleteCategory)
+	inp := new(models.CategoryInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -96,13 +81,8 @@ func (h *Handler) DeleteCategoryById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"delete": inp.UUID})
 }
 
-type NewCategory struct {
-	Title string `json:"title"`
-}
-
 func (h *Handler) NewCategory(c *gin.Context) {
-	//* Создаёт новый untitled проект
-	inp := new(NewCategory)
+	inp := new(models.CategoryInp)
 
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)

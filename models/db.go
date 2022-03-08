@@ -26,18 +26,6 @@ type Project struct {
 	// * Если state = 2 - доступный только по api
 }
 
-// * Структура которая возвращяеться по api
-type ApiProject struct {
-	UUID         string `json:"uuid"`
-	CategoryUUID string `json:"category_uuid"`
-	Name         string `json:"name"`
-	Prewiew      string `json:"prewiew"`
-	State        int    `json:"state"`
-	// * Если state = 0 - публичный для всех (Default)
-	// * Если state = 1 - приватный для всех
-	// * Если state = 2 - доступный только по api
-}
-
 type Photo struct {
 	UUID        string `json:"photo_uuid"`
 	ProjectUUID string `json:"project_uuid"`
