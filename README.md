@@ -12,7 +12,7 @@ go get
 make env-prepare
 ```
 
-2. Create postgress schema: `just_portfolio`
+2. Create postgres schema: `just_portfolio`
 
 3. Build
 
