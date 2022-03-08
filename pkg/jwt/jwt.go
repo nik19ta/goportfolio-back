@@ -1,7 +1,9 @@
 package jwt
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -10,19 +12,35 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func GetFieldFromJWT(token string, field string) (string, error) {
+func GetFieldFromJWT(token string, field string) (*string, error) {
+	if len(token) == 0 {
+		return nil, errors.New("not token")
+	}
+
 	words := strings.Fields(token)
+	log.Println("token")
+	log.Println(token)
+	log.Println(words)
+
+	if len(words) == 0 {
+		return nil, errors.New("not token")
+	}
+
 	claims, err := ParseJWT(words[1])
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	idString := fmt.Sprint(claims[field])
-	return idString, nil
+	return &idString, nil
 }
 
 func ParseJWT(tokenString string) (jwt.MapClaims, error) {
+	if len(tokenString) == 0 {
+		return nil, errors.New("not token")
+	}
+
 	conf := config.GetConfig()
 	hmacSampleSecret := []byte(conf.JWT_SECRET)
 

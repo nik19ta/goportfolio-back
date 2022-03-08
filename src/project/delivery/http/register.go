@@ -15,7 +15,7 @@ func RegisterHTTPEndpoints(router *gin.Engine, uc project.UseCase) {
 		projectEndpoints.GET("/id", h.GetProjectById)           // ! (no)
 		projectEndpoints.GET("/user", h.GetProjectsByShortname) // * (ok)
 		//* Auth
-		projectEndpoints.POST("/new", h.Newproject)                        // * (ok)
+		projectEndpoints.POST("/new", h.NewProject)                        // * (ok)
 		projectEndpoints.PUT("/photo", h.LoadPhotoPrewiew)                 // * (ok)
 		projectEndpoints.PUT("/state", h.ProjectSetState)                  // * (ok)
 		projectEndpoints.PUT("/edit/title", func(c *gin.Context) {})       // ! (no)

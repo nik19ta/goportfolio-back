@@ -1,7 +1,7 @@
 package http
 
 import (
-	jwt "go-just-portfolio/pkg/jwt"
+	"go-just-portfolio/pkg/utils"
 	categories "go-just-portfolio/src/categories"
 
 	"net/http"
@@ -50,14 +50,14 @@ func (h *Handler) UpdateCategory(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	err = h.useCase.EditCategory(userid, inp.UUID, inp.Title)
+	err = h.useCase.EditCategory(*userid, inp.UUID, inp.Title)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": "true"})
@@ -79,14 +79,14 @@ func (h *Handler) DeleteCategoryById(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	err = h.useCase.DeleteCategory(userid, inp.UUID)
+	err = h.useCase.DeleteCategory(*userid, inp.UUID)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": "true"})
@@ -109,14 +109,14 @@ func (h *Handler) NewCategory(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	uuid, err := h.useCase.AddCategory(userid, inp.Title)
+	uuid, err := h.useCase.AddCategory(*userid, inp.Title)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "something went wrong"})

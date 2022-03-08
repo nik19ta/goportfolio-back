@@ -3,6 +3,7 @@ package http
 import (
 	"go-just-portfolio/models"
 	jwt "go-just-portfolio/pkg/jwt"
+	utils "go-just-portfolio/pkg/utils"
 	project "go-just-portfolio/src/project"
 
 	"log"
@@ -42,7 +43,7 @@ func (h *Handler) GetProjectsByShortname(c *gin.Context) {
 		if err != nil {
 			projects, err = h.useCase.GetProjectsByShortname(c.Request.URL.Query()["shortname"][0], false, "")
 		} else {
-			projects, err = h.useCase.GetProjectsByShortname(c.Request.URL.Query()["shortname"][0], true, userid)
+			projects, err = h.useCase.GetProjectsByShortname(c.Request.URL.Query()["shortname"][0], true, *userid)
 		}
 
 	} else {
@@ -71,10 +72,10 @@ func (h *Handler) ProjectSetState(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
@@ -87,7 +88,7 @@ func (h *Handler) ProjectSetState(c *gin.Context) {
 		return
 	}
 
-	err = h.useCase.SetStateproject(inp.State, inp.ProjectUUID, userid)
+	err = h.useCase.SetStateproject(inp.State, inp.ProjectUUID, *userid)
 
 	if err != nil {
 		c.JSON(400, gin.H{"message": "Something went wrong"})
@@ -109,14 +110,14 @@ func (h *Handler) DeleteprojectById(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	err = h.useCase.DeleteprojectById(inp.UUID, userid)
+	err = h.useCase.DeleteprojectById(inp.UUID, *userid)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": true})
@@ -130,7 +131,7 @@ type Newproject struct {
 	CategoryUUID string `json:"category_uuid"`
 }
 
-func (h *Handler) Newproject(c *gin.Context) {
+func (h *Handler) NewProject(c *gin.Context) {
 	//* Создаёт новый untitled проект
 	inp := new(Newproject)
 
@@ -139,14 +140,14 @@ func (h *Handler) Newproject(c *gin.Context) {
 		return
 	}
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	uuid, err := h.useCase.Newproject(userid, inp.CategoryUUID)
+	uuid, err := h.useCase.Newproject(*userid, inp.CategoryUUID)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "something went wrong"})
@@ -172,14 +173,14 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	photo_type := c.PostForm("photo_type")
 	project_uuid := c.PostForm("project_uuid")
 
-	userid, err := jwt.GetFieldFromJWT(c.Request.Header["Authorization"][0], "id")
+	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "non token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	uuid, err := h.useCase.LoadPhoto(file, userid, project_uuid, photo_type)
+	uuid, err := h.useCase.LoadPhoto(file, *userid, project_uuid, photo_type)
 
 	if err != nil {
 		log.Println(err)
