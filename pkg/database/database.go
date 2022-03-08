@@ -1,23 +1,31 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
 	"go-just-portfolio/models"
-	config "go-just-portfolio/pkg/config"
+	"go-just-portfolio/pkg/config"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	postgres "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func InitDB() *gorm.DB {
 	conf := config.GetConfig()
-	db, err := gorm.Open("mysql", conf.MYSQL)
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", conf.PostgresHost, conf.PostgresUser, conf.PostgresPassword, conf.PostgresDbname, conf.PostgresPort, conf.PostgresSslmode, conf.PostgresTimezone)
+
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: dsn,
+	}), &gorm.Config{})
+
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	migrateDB(db)
+
 	return db
 }
 

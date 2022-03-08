@@ -12,11 +12,7 @@ go get
 make env-prepare
 ```
 
-2. Create mysql schema:
-
-```mysql
-CREATE SCHEMA `just-portfolio`;
-```
+2. Create postgress schema: `just_portfolio`
 
 3. Build
 

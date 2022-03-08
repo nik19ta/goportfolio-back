@@ -38,7 +38,7 @@ func ParseJWT(tokenString string) (jwt.MapClaims, error) {
 	}
 
 	conf := config.GetConfig()
-	hmacSampleSecret := []byte(conf.JWT_SECRET)
+	hmacSampleSecret := []byte(conf.JwtSecret)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 
@@ -57,7 +57,7 @@ func ParseJWT(tokenString string) (jwt.MapClaims, error) {
 
 func MakeJWT(Shortname string, Mail string, Id string) (string, error) {
 	conf := config.GetConfig()
-	hmacSampleSecret := []byte(conf.JWT_SECRET)
+	hmacSampleSecret := []byte(conf.JwtSecret)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"shortname": Shortname,

@@ -11,9 +11,15 @@ import (
 var once sync.Once
 
 type Config struct {
-	JWT_SECRET string `json:"jwt_secret"`
-	PORT       string `json:"port"`
-	MYSQL      string `json:"mysql"`
+	JwtSecret        string `json:"jwt_secret"`
+	Port             string `json:"port"`
+	PostgresHost     string `json:"postgres_host"`
+	PostgresUser     string `json:"postgres_user"`
+	PostgresPassword string `json:"postgres_password"`
+	PostgresDbname   string `json:"postgres_dbname"`
+	PostgresPort     string `json:"postgres_port"`
+	PostgresSslmode  string `json:"postgres_sslmode"`
+	PostgresTimezone string `json:"postgres_timezone"`
 }
 
 var config Config
@@ -34,9 +40,15 @@ func GetConfig() Config {
 		envs := initConfig()
 
 		config = Config{
-			JWT_SECRET: envs["JWT_SECRET"],
-			PORT:       envs["PORT"],
-			MYSQL:      envs["MYSQL"],
+			JwtSecret:        envs["jwt_secret"],
+			Port:             envs["port"],
+			PostgresHost:     envs["postgres_host"],
+			PostgresUser:     envs["postgres_user"],
+			PostgresPassword: envs["postgres_password"],
+			PostgresDbname:   envs["postgres_dbname"],
+			PostgresPort:     envs["postgres_port"],
+			PostgresSslmode:  envs["postgres_sslmode"],
+			PostgresTimezone: envs["postgres_timezone"],
 		}
 	}
 

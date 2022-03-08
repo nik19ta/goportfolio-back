@@ -11,7 +11,7 @@ func main() {
 
 	app := server.NewApp()
 
-	if err := app.Run(conf.PORT); err != nil {
+	if err := app.Run(conf.Port); err != nil {
 		log.Fatalf("%s", err.Error())
 	}
 }

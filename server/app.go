@@ -15,17 +15,17 @@ import (
 
 	auth "go-just-portfolio/src/auth"
 	authhttp "go-just-portfolio/src/auth/delivery/http"
-	authmysql "go-just-portfolio/src/auth/repository/mysql"
+	authpostgres "go-just-portfolio/src/auth/repository/postgres"
 	authusecase "go-just-portfolio/src/auth/usecase"
 
 	project "go-just-portfolio/src/project"
 	projecthttp "go-just-portfolio/src/project/delivery/http"
-	projectmysql "go-just-portfolio/src/project/repository/mysql"
+	projectpostgres "go-just-portfolio/src/project/repository/postgres"
 	projectusecase "go-just-portfolio/src/project/usecase"
 
 	categories "go-just-portfolio/src/categories"
 	categorieshttp "go-just-portfolio/src/categories/delivery/http"
-	categoriesmysql "go-just-portfolio/src/categories/repository/mysql"
+	categoriespostgres "go-just-portfolio/src/categories/repository/postgres"
 	categoriesusecase "go-just-portfolio/src/categories/usecase"
 )
 
@@ -40,9 +40,9 @@ type App struct {
 func NewApp() *App {
 	db := database.InitDB()
 
-	userRepo := authmysql.NewUserRepository(db)
-	projectRepo := projectmysql.NewProjectRepository(db)
-	categoriesRepo := categoriesmysql.NewСategoriesRepository(db)
+	userRepo := authpostgres.NewUserRepository(db)
+	projectRepo := projectpostgres.NewProjectRepository(db)
+	categoriesRepo := categoriespostgres.NewСategoriesRepository(db)
 
 	return &App{
 		authUC:       authusecase.NewAuthUseCase(userRepo),

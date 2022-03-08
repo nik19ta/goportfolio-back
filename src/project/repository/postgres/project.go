@@ -1,11 +1,11 @@
-package mysql
+package postgres
 
 import (
 	"go-just-portfolio/models"
 	"go-just-portfolio/src/project"
 
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type ProjectRepository struct {
