@@ -9,18 +9,21 @@ import (
 func RegisterHTTPEndpoints(router *gin.Engine, uc project.UseCase) {
 	h := NewHandler(uc)
 
-	authEndpoints := router.Group("/api/project")
+	projectEndpoints := router.Group("/api/project")
 	{
 		//* Not Auth
-		authEndpoints.GET("/id", h.GetProjectById)
-		authEndpoints.GET("/user", h.GetProjectsByShortname)
+		projectEndpoints.GET("/id", h.GetProjectById)           // ! (no)
+		projectEndpoints.GET("/user", h.GetProjectsByShortname) // * (ok)
 		//* Auth
-		authEndpoints.POST("/new", h.Newproject)
-		authEndpoints.DELETE("/", h.DeleteprojectById)
-
-		authEndpoints.PUT("/photo", h.LoadPhoto)
-		authEndpoints.PUT("/prewiew", h.LoadPhotoPrewiew)
-
-		authEndpoints.PUT("/state", h.ProjectSetState)
+		projectEndpoints.POST("/new", h.Newproject)                        // * (ok)
+		projectEndpoints.PUT("/photo", h.LoadPhotoPrewiew)                 // * (ok)
+		projectEndpoints.PUT("/state", h.ProjectSetState)                  // * (ok)
+		projectEndpoints.PUT("/edit/title", func(c *gin.Context) {})       // ! (no)
+		projectEndpoints.PUT("/edit/description", func(c *gin.Context) {}) // ! (no)
+		projectEndpoints.PUT("/edit/tag", func(c *gin.Context) {})         // ! (no)
+		projectEndpoints.DELETE("/", h.DeleteprojectById)                  // * (ok)
+		projectEndpoints.DELETE("/photo", func(c *gin.Context) {})         // ! (no)
+		projectEndpoints.DELETE("/description", func(c *gin.Context) {})   // ! (no)
+		projectEndpoints.DELETE("/tag", func(c *gin.Context) {})           // ! (no)
 	}
 }

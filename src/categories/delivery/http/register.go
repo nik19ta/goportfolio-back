@@ -9,13 +9,13 @@ import (
 func RegisterHTTPEndpoints(router *gin.Engine, uc categories.UseCase) {
 	h := NewHandler(uc)
 
-	authEndpoints := router.Group("/api/categories")
+	categoriesEndpoints := router.Group("/api/categories")
 	{
 		//* Not Auth
-		authEndpoints.GET("/", h.GetCategoriesByShortname)
+		categoriesEndpoints.GET("/", h.GetCategoriesByShortname) // * (ok)
 		//* Auth
-		authEndpoints.POST("/create", h.NewCategory)
-		authEndpoints.DELETE("/delete", h.DeleteCategoryById)
-		authEndpoints.PUT("/edit", h.UpdateCategory)
+		categoriesEndpoints.POST("/create", h.NewCategory)          // * (ok)
+		categoriesEndpoints.DELETE("/delete", h.DeleteCategoryById) // * (ok)
+		categoriesEndpoints.PUT("/edit", h.UpdateCategory)          // * (ok)
 	}
 }

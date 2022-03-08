@@ -1,5 +1,11 @@
 # just-portfolio.com
 
+0. Get go packeges
+
+```bash
+go get
+```
+
 1. Make .env file
 
 ```bash
