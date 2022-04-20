@@ -145,6 +145,17 @@ func (p *projectUseCase) SetStateproject(state int, uuid, user_id string) error 
 }
 
 /*
+	Можно изменить имя проекта, строка
+
+	! Метод требует авторизации через bearer token
+*/
+
+func (p *projectUseCase) RenameProject(user_uuid, uuid, title string) error {
+	err := p.userRepo.RenameProject(user_uuid, uuid, title)
+	return err
+}
+
+/*
 	Метод подгрузки фото
 
 	Фото емеет три типа

@@ -5,6 +5,7 @@ import (
 	jwt "go-just-portfolio/pkg/jwt"
 	utils "go-just-portfolio/pkg/utils"
 	project "go-just-portfolio/src/project"
+	"log"
 
 	"net/http"
 
@@ -131,6 +132,31 @@ func (h *Handler) NewProject(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"project": uuid})
 }
 
+//* Создаёт новый untitled проект
+func (h *Handler) RenameProject(c *gin.Context) {
+	inp := new(models.RenameProjectInp)
+
+	if err := c.BindJSON(inp); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	userid, err := utils.GetUserIdFromJWT(c)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	rename_err := h.useCase.RenameProject(*userid, inp.UUID, inp.Title)
+
+	if rename_err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "something went wrong"})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"statue": "ok", "uuid": inp.UUID, "title": inp.Title})
+}
+
 func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	file, err := c.FormFile("file")
 
@@ -152,6 +178,8 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	}
 
 	uuid, err := h.useCase.LoadPhoto(file, *userid, project_uuid, photo_type)
+
+	log.Println(err)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "error upload file"})

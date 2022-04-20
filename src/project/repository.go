@@ -13,4 +13,5 @@ type ProjectRepository interface {
 	GetProjectsByShortname(shortname string) ([]models.Project, error)
 	SavePhoto(project_uuid, photo_name, photo_type string) (*string, error)
 	UpdatePrewiew(project_uuid, prewiew_name string) error
+	RenameProject(user_uuid, uuid, title string) error
 }

@@ -24,3 +24,8 @@ type DelProjectInp struct {
 type NewProjectInp struct {
 	CategoryUUID string `json:"category_uuid"`
 }
+
+type RenameProjectInp struct {
+	UUID  string `json:"uuid"`
+	Title string `json:"title"`
+}

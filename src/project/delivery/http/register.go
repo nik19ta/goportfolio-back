@@ -20,10 +20,10 @@ func RegisterHTTPEndpoints(router *gin.Engine, uc project.UseCase) {
 		projectEndpoints.POST("/create/tag", func(c *gin.Context) {})         // ! (no)
 		projectEndpoints.PUT("/photo", h.LoadPhotoPrewiew)                    // * (ok)
 		projectEndpoints.PUT("/state", h.ProjectSetState)                     // * (ok)
-		projectEndpoints.PUT("/edit/title", func(c *gin.Context) {})          // ! (no)
+		projectEndpoints.PUT("/title", h.RenameProject)                       // ~ (now)
 		projectEndpoints.DELETE("/photo", func(c *gin.Context) {})            // ! (no)
 		projectEndpoints.DELETE("/description", func(c *gin.Context) {})      // ! (no)
 		projectEndpoints.DELETE("/tag", func(c *gin.Context) {})              // ! (no)
-		projectEndpoints.DELETE("/", h.DeleteprojectById)                     // * (ok)
+		projectEndpoints.DELETE("", h.DeleteprojectById)                      // * (ok)
 	}
 }
