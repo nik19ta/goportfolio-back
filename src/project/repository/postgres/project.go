@@ -3,7 +3,6 @@ package postgres
 import (
 	"go-just-portfolio/models"
 	"go-just-portfolio/src/project"
-	"log"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -115,8 +114,6 @@ func (p ProjectRepository) CreateTag(project_uuid string, tag string) (*string, 
 
 func (p ProjectRepository) UpdatePrewiew(project_uuid, prewiew_name string) error {
 	query := "UPDATE projects SET prewiew = '" + prewiew_name + "' WHERE (uuid = '" + project_uuid + "');"
-
-	log.Println(query)
 
 	var ss models.Project
 

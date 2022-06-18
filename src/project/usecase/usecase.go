@@ -187,8 +187,6 @@ func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, projec
 	newFileName := uuid.New().String() + extension
 	path := "./images/" + newFileName
 
-	var uuid *string
-
 	err := filesystem.SaveUploadedFile(file, path)
 
 	if err != nil {
@@ -198,12 +196,12 @@ func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, projec
 	if photo_type == "prewiew" {
 		err = p.userRepo.UpdatePrewiew(project_uuid, newFileName)
 	} else {
-		uuid, err = p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
+		_, err = p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
 	}
 
 	if err != nil {
-		return nil, err
+		return &newFileName, err
 	}
 
-	return uuid, nil
+	return &newFileName, nil
 }
