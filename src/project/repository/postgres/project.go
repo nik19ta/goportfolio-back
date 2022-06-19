@@ -87,6 +87,8 @@ func (p ProjectRepository) CreateDescription(project_uuid, text string) (*string
 func (p ProjectRepository) AddDescriptionIdToContent(project_uuid, description_uuid, type_ string) error {
 	query := "SELECT * FROM projects WHERE (uuid = '" + project_uuid + "');"
 
+	log.Println(query)
+
 	var ss models.Project
 
 	res := p.db.Raw(query).Scan(&ss)
@@ -96,6 +98,9 @@ func (p ProjectRepository) AddDescriptionIdToContent(project_uuid, description_u
 	}
 
 	new_content := c.InsertIntoString(ss.Contents, type_+"&"+description_uuid)
+
+	log.Println(ss.Contents)
+	log.Println(new_content)
 
 	query2 := "UPDATE projects SET contents = '" + new_content + "' WHERE (uuid = '" + project_uuid + "');"
 

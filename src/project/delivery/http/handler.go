@@ -189,6 +189,7 @@ func (h *Handler) AddDescription(c *gin.Context) {
 }
 
 func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
+	log.Println("UPDATE PHOTO !!!!!!!")
 	file, err := c.FormFile("file")
 
 	if err != nil {
@@ -201,6 +202,9 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	photo_type := c.PostForm("photo_type")
 	project_uuid := c.PostForm("project_uuid")
 
+	log.Println(photo_type)
+	log.Println(project_uuid)
+
 	userid, err := utils.GetUserIdFromJWT(c)
 
 	if err != nil {
@@ -211,6 +215,7 @@ func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {
 	uuid, err := h.useCase.LoadPhoto(file, *userid, project_uuid, photo_type)
 
 	log.Println(err)
+	log.Println(uuid)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "error upload file"})

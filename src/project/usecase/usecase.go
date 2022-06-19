@@ -3,6 +3,7 @@ package usecase
 import (
 	"go-just-portfolio/models"
 	"go-just-portfolio/src/project"
+	"log"
 	"mime/multipart"
 	"path/filepath"
 
@@ -208,8 +209,10 @@ func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, projec
 		err = p.userRepo.UpdatePrewiew(project_uuid, newFileName)
 	} else {
 		photo_id, _ := p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
+		log.Println(photo_id)
 
-		_ = p.userRepo.AddDescriptionIdToContent(project_uuid, *photo_id, "photo")
+		err = p.userRepo.AddDescriptionIdToContent(project_uuid, *photo_id, "photo")
+		log.Println(err)
 	}
 
 	if err != nil {
