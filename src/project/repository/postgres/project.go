@@ -3,9 +3,13 @@ package postgres
 import (
 	"go-just-portfolio/models"
 	"go-just-portfolio/src/project"
+	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	c "go-just-portfolio/pkg/custom"
 )
 
 type ProjectRepository struct {
@@ -25,6 +29,7 @@ func (p ProjectRepository) Newproject(user_uuid, category_uuid, title string) (*
 		CategoryUUID: category_uuid,
 		Name:         title,
 		Prewiew:      "empty",
+		Contents:     "",
 		State:        1,
 	}
 
@@ -61,15 +66,13 @@ func (p ProjectRepository) SetStateproject(state int, uuid, user_id string) erro
 	return nil
 }
 
-func (p ProjectRepository) CreateDescription(project_uuid, key, value, lang string) (*string, error) {
+func (p ProjectRepository) CreateDescription(project_uuid, text string) (*string, error) {
 	uuid := uuid.New().String()
 
 	description := models.Description{
 		UUID:        uuid,
 		ProjectUUID: project_uuid,
-		Key:         key,
-		Value:       value,
-		Language:    lang,
+		Text:        text,
 	}
 
 	res := p.db.Create(&description)
@@ -79,6 +82,32 @@ func (p ProjectRepository) CreateDescription(project_uuid, key, value, lang stri
 	}
 
 	return &uuid, nil
+}
+
+func (p ProjectRepository) AddDescriptionIdToContent(project_uuid, description_uuid, type_ string) error {
+	query := "SELECT * FROM projects WHERE (uuid = '" + project_uuid + "');"
+
+	var ss models.Project
+
+	res := p.db.Raw(query).Scan(&ss)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	new_content := c.InsertIntoString(ss.Contents, type_+"&"+description_uuid)
+
+	query2 := "UPDATE projects SET contents = '" + new_content + "' WHERE (uuid = '" + project_uuid + "');"
+
+	var ss2 models.Project
+
+	res = p.db.Raw(query2).Scan(&ss2)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
 }
 
 func (p ProjectRepository) DeleteprojectById(project_uuid, user_uuid string) error {
@@ -112,6 +141,24 @@ func (p ProjectRepository) CreateTag(project_uuid string, tag string) (*string, 
 	return &uuid, nil
 }
 
+func (p ProjectRepository) AddDescription(project_uuid, text string) (*string, error) {
+	uuid := uuid.New().String()
+
+	newDescription := models.Description{
+		UUID:        uuid,
+		ProjectUUID: uuid,
+		Text:        text,
+	}
+
+	res := p.db.Create(&newDescription)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &uuid, nil
+}
+
 func (p ProjectRepository) UpdatePrewiew(project_uuid, prewiew_name string) error {
 	query := "UPDATE projects SET prewiew = '" + prewiew_name + "' WHERE (uuid = '" + project_uuid + "');"
 
@@ -130,6 +177,49 @@ func (p *ProjectRepository) RenameProject(user_uuid, uuid, title string) error {
 	res := p.db.Raw(query).Scan(&ss)
 
 	return res.Error
+}
+
+func (p *ProjectRepository) GetProjectById(uuid string) models.InfoProjects {
+	query := "SELECT * FROM projects WHERE (uuid = '" + uuid + "');"
+
+	var info models.InfoProjects
+
+	var ss models.Project
+
+	p.db.Raw(query).Scan(&ss)
+
+	var content_photos []models.Photo
+	var content_descs []models.Description
+
+	arr := c.GetArray(ss.Contents)
+
+	for _, item := range arr {
+		if item != "" {
+			arr := strings.Split(item, "&")
+			log.Println(item)
+			log.Println(arr)
+
+			content_type := arr[0]
+			content_c := arr[1]
+
+			if content_type == "photo" {
+				photo_query := "SELECT * FROM photos WHERE (uuid = '" + content_c + "');"
+				var photo_content models.Photo
+				p.db.Raw(photo_query).Scan(&photo_content)
+				content_photos = append(content_photos, photo_content)
+			} else {
+				description_query := "SELECT * FROM descriptions WHERE (uuid = '" + content_c + "');"
+				var description_content models.Description
+				p.db.Raw(description_query).Scan(&description_content)
+				content_descs = append(content_descs, description_content)
+			}
+		}
+	}
+
+	info.Main = ss
+	info.Photos = content_photos
+	info.Descriptions = content_descs
+	return info
 }
 
 func (p ProjectRepository) SavePhoto(project_uuid, photo_name, photo_type string) (*string, error) {

@@ -20,6 +20,7 @@ type Project struct {
 	CategoryUUID string `json:"category_uuid"`
 	Name         string `json:"name"`
 	Prewiew      string `json:"prewiew"`
+	Contents     string `json:"contents"`
 	State        int    `json:"state"`
 	// * Если state = 0 - публичный для всех (Default)
 	// * Если state = 1 - приватный для всех
@@ -44,9 +45,7 @@ type Tags struct {
 type Description struct {
 	UUID        string `json:"uuid"`
 	ProjectUUID string `json:"project_uuid"`
-	Key         string `json:"key"`
-	Value       string `json:"value"`
-	Language    string `json:"language"`
+	Text        string `json:"value"`
 }
 
 type Category struct {

@@ -29,3 +29,14 @@ type RenameProjectInp struct {
 	UUID  string `json:"uuid"`
 	Title string `json:"title"`
 }
+
+type AddDescription struct {
+	Test string `json:"text"`
+	UUID string `json:"uuid"`
+}
+
+type InfoProjects struct {
+	Main         Project       `json:"project"`
+	Photos       []Photo       `json:"photos"`
+	Descriptions []Description `json:"descriptions"`
+}

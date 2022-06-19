@@ -22,8 +22,6 @@ func NewHandler(useCase project.UseCase) *Handler {
 	}
 }
 
-func (h *Handler) GetProjectById(c *gin.Context) {}
-
 func (h *Handler) GetProjectsByShortname(c *gin.Context) {
 	var projects []models.ApiProject
 	var err error
@@ -46,6 +44,14 @@ func (h *Handler) GetProjectsByShortname(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, projects)
+}
+
+func (h *Handler) GetProjectById(c *gin.Context) {
+	id := c.Request.URL.Query()["id"][0]
+
+	project := h.useCase.GetProject(id)
+
+	c.JSON(http.StatusOK, project)
 }
 
 func (h *Handler) ProjectSetState(c *gin.Context) {
@@ -154,7 +160,32 @@ func (h *Handler) RenameProject(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "something went wrong"})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"statue": "ok", "uuid": inp.UUID, "title": inp.Title})
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "uuid": inp.UUID, "title": inp.Title})
+}
+
+//* Добовляет текстовое описание к проекту
+func (h *Handler) AddDescription(c *gin.Context) {
+	inp := new(models.AddDescription)
+
+	if err := c.BindJSON(inp); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	_, err := utils.GetUserIdFromJWT(c)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	uuid, err := h.useCase.AddDescription(inp.UUID, inp.Test)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "something went wrong"})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "description_id": uuid})
 }
 
 func (h *Handler) LoadPhotoPrewiew(c *gin.Context) {

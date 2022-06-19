@@ -156,6 +156,17 @@ func (p *projectUseCase) RenameProject(user_uuid, uuid, title string) error {
 }
 
 /*
+	Получить проект по id
+
+	! Метод не требует авторизации через bearer token
+*/
+
+func (p *projectUseCase) GetProject(uuid string) models.InfoProjects {
+	data := p.userRepo.GetProjectById(uuid)
+	return data
+}
+
+/*
 	Метод подгрузки фото
 
 	Фото емеет три типа
@@ -196,7 +207,9 @@ func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, projec
 	if photo_type == "prewiew" {
 		err = p.userRepo.UpdatePrewiew(project_uuid, newFileName)
 	} else {
-		_, err = p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
+		photo_id, _ := p.userRepo.SavePhoto(project_uuid, newFileName, photo_type)
+
+		_ = p.userRepo.AddDescriptionIdToContent(project_uuid, *photo_id, "photo")
 	}
 
 	if err != nil {
@@ -204,4 +217,16 @@ func (p *projectUseCase) LoadPhoto(file *multipart.FileHeader, user_uuid, projec
 	}
 
 	return &newFileName, nil
+}
+
+func (p *projectUseCase) AddDescription(project_uuid, text string) (*string, error) {
+	uuid, err := p.userRepo.AddDescription(project_uuid, text)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_ = p.userRepo.AddDescriptionIdToContent(project_uuid, *uuid, "text")
+
+	return uuid, nil
 }
