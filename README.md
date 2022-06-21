@@ -14,6 +14,10 @@ A highly focused portfolio content management system
 - ORM - GORM
 - DB - PostgreSQL
 
+### DB Schame
+
+![Schame](./README/db.png)
+
 ## How to run 
 
 1. Get go packeges `go get`
