@@ -1,21 +1,113 @@
-# just-portfolio.com
+# Back-end for just-portfolio.com 
 
-0. Get go packeges
+## About the project
 
-```bash
-go get
+A highly focused portfolio content management system
+
+- wiew my profile on [just-portfolio](https://just-portfolio.com/nik19ta)
+- wiew [front-end](https://github.com/nik19ta/just-portfolio.com) reposit repository on github
+
+### Tools
+
+- Lang - GoLang
+- Framework - Gin
+- ORM - GORM
+- DB - PostgreSQL
+
+## How to run 
+
+1. Get go packeges `go get`
+2. Make .env file `make env-prepare`
+3. Create postgres schema: `just_portfolio`
+4. Build `make build`
+
+## Make as service (Ubuntu 20.04)
+
+1. make file `portfolio.service` into `/etc/systemd/system`
+
+2. paste code into `/etc/systemd/system/portfolio.service`
+
+```service
+[Unit]
+Description=just-portfolio.com
+ConditionPathExists=/home/user/just-portfolio/back-end
+After=network.target
+
+[Service]
+WorkingDirectory=/home/user/just-portfolio/back-end
+ExecStart=/home/user/just-portfolio/back-end/.bin/app
+
+Restart=on-failure
+RestartSec=10
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=appgoservice
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-1. Make .env file
+3. start service `sudo service portfolio restart`
+4. you can wiew status `sudo service portfolio status`
 
-```bash
-make env-prepare
+## Configuration Nginx 
+
+1. create file /etc/nginx/sites-available/just-portfolio.com.conf 
+
+2. paste the code 
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name just-portfolio.com www.just-portfolio.com;
+    return 301 https://just-portfolio.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name www.just-portfolio.com;
+    return 301 https://just-portfolio.com$request_uri;
+
+    ssl_certificate /etc/letsencrypt/live/just-portfolio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/just-portfolio.com/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/just-portfolio.com/chain.pem;
+
+    include snippets/ssl-params.conf;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name just-portfolio.com;
+    root /var/www/just-portfolio.com/html;
+    index index.html index.xml;
+
+    location / {
+      try_files $uri /index.html;
+    }
+
+    index index.html index.xml;
+ 
+    location /images {
+      proxy_pass http://localhost:3070;
+    }
+
+    location /api {
+      proxy_pass http://localhost:3070;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/just-portfolio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/just-portfolio.com/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/just-portfolio.com/chain.pem;
+
+    include snippets/ssl-params.conf;
+}
 ```
 
-2. Create postgres schema: `just_portfolio`
-
-3. Build
-
-```bash
-make build
-```
+> for https you need to make letsencrypt certificates
