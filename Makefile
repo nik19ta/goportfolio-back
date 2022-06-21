@@ -1,7 +1,7 @@
 # Makefile
 
 env-prepare: # create .env-file for secrets
-	cp -n .env.example .env
+	cp -n .example.env  .env
 
 image-prepare: # create folder inages
 	mkdir images
