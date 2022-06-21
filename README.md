@@ -22,8 +22,10 @@ A highly focused portfolio content management system
 
 1. Get go packeges `go get`
 2. Make .env file `make env-prepare`
+2. Make images folder `make image-prepare`
 3. Create postgres schema: `just_portfolio`
 4. Build `make build`
+5. Start `make start`
 
 ## Make as service (Ubuntu 20.04)
 
