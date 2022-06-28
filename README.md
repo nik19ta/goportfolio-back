@@ -29,7 +29,7 @@ A highly focused portfolio content management system
 
 ## How to run (Docker)
 
-1. replace `postgres_host` field in env file from `fullstack-postgres` to `localhost`
+1. replace `postgres_host` field in env file from  `localhost` to `fullstack-postgres`
 2. build docker `docker-compose build`
 3. run docker `docker-compose up -d`
 
