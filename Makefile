@@ -3,8 +3,8 @@
 env-prepare: # create .env-file for secrets
 	cp -n .example.env  .env
 
-image-prepare: # create folder inages
-	mkdir images
+image-prepare: # create folder "images" if not exists 
+	mkdir -p images
 
 build: # build server
 	go build -o ./.bin/app ./cmd/api/main.go

@@ -27,6 +27,12 @@ A highly focused portfolio content management system
 4. Build `make build`
 5. Start `make start`
 
+## How to run (Docker)
+
+1. replace `postgres_host` field in env file from  `localhost` to `fullstack-postgres`
+2. build docker `docker-compose build`
+3. run docker `docker-compose up -d`
+
 ## Make as service (Ubuntu 20.04)
 
 1. make file `portfolio.service` into `/etc/systemd/system`
