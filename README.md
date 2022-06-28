@@ -27,7 +27,7 @@ A highly focused portfolio content management system
 4. Build `make build`
 5. Start `make start`
 
-## Hot to run (Docker)
+## How to run (Docker)
 
 1. replace `postgres_host` field in env file from `fullstack-postgres` to `localhost`
 2. build docker `docker-compose build`
