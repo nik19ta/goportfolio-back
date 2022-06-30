@@ -20,6 +20,10 @@ type Config struct {
 	PostgresPort     string `json:"postgres_port"`
 	PostgresSslmode  string `json:"postgres_sslmode"`
 	PostgresTimezone string `json:"postgres_timezone"`
+
+	GITHUB_SECRET    string `json:"GITHUB_SECRET"`
+	GITHUB_CLIENT_ID string `json:"GITHUB_CLIENT_ID"`
+	REDIRECT         string `json:"REDIRECT"`
 }
 
 var config Config
@@ -49,6 +53,9 @@ func GetConfig() Config {
 			PostgresPort:     envs["postgres_port"],
 			PostgresSslmode:  envs["postgres_sslmode"],
 			PostgresTimezone: envs["postgres_timezone"],
+			GITHUB_SECRET:    envs["GITHUB_SECRET"],
+			GITHUB_CLIENT_ID: envs["GITHUB_CLIENT_ID"],
+			REDIRECT:         envs["REDIRECT"],
 		}
 	}
 

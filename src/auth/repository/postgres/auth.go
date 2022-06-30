@@ -48,7 +48,24 @@ func (r UserRepository) CreateUser(user *models.User) (*string, error) {
 
 func (r UserRepository) GetUserToken(mail, password string) (*string, error) {
 	user := models.User{}
-	result := r.db.Where(&models.User{Mail: mail, Password: password}).First(&user)
+	result := r.db.Where(&models.User{Mail: mail, Password: password, Type: "user"}).First(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	token, err := jwt.MakeJWT(user.Shortname, user.Mail, user.UUID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &token, nil
+}
+
+func (r UserRepository) GetHubCheckUser(github_id int64) (*string, error) {
+	user := models.User{}
+	result := r.db.Where(&models.User{ServiceId: github_id, Type: "github"}).First(&user)
 
 	if result.Error != nil {
 		return nil, result.Error

@@ -8,6 +8,7 @@ type User struct {
 	Avatar    string `json:"avatar"`
 	Fullname  string `json:"fullname"`
 	Type      string `json:"type"`
+	ServiceId int64  `json:"service_id"`
 	About     string `json:"about"`
 	// * Если type = user -  вход через сайт
 	// * Если type = github - вход через github
