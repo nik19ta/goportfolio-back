@@ -1,11 +1,11 @@
-# Back-end for just-portfolio.com 
+# Back-end for goportfolio.nik19ta.pro
 
 ## About the project
 
 A highly focused portfolio content management system
 
-- wiew my profile on [just-portfolio](https://just-portfolio.com/nik19ta)
-- wiew [front-end](https://github.com/nik19ta/just-portfolio.com) reposit repository on github
+- wiew my profile on [just-portfolio](https://goportfolio.nik19ta.pro/nik19ta)
+- wiew [front-end](https://github.com/nik19ta/goportfolio-front) reposit repository on github
 
 ### Tools
 
